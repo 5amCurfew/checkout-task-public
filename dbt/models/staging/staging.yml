@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: User database. Type-2 slowly moving dimension using dbt snapshots (refer to https://docs.getdbt.com/docs/building-a-dbt-project/snapshots/).
+    columns:
+      - name: natural_key
+        description: A unique identifier for a user.
+        tests:
+          - not_null
+
+      - name: surrogate_key
+        description: Temporal key for a user and state (namely postcode).
+        tests:
+          - not_null
+          - unique
+
+      - name: postcode
+        description: Postcode recorded for given period.
+        tests:
+          - not_null
+
+  - name: stg_page_views
+    description: Record of each page view loaded incrementally (hourly).
+    columns:
+      - name: users_nk
+        description: Identifier of user
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_users')
+              field: natural_key
+
+      - name: page_path
+        description: URL page path of services
+
+      - name: pageview_datetime
+        description: Timestamp of recorded page view.
+
+      - name: id
+        description: unique identifier of page view event. Generated using user_id and pageview_datetime.

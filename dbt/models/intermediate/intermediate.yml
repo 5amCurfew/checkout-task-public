@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: int_page_views
+    description: Intermediate table for page view data. Joins users by surrogate_key
+    columns:
+      - name: id
+        description: A unique identifier for the recorded page view.
+        tests:
+          - not_null
+          - unique
+
+      - name: users_nk
+        description: Surrogate key for users
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: natural_key
+
+      - name: users_sk
+        description: Surrogate key for users
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: surrogate_key
